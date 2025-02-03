@@ -1,0 +1,48 @@
+services:
+  nginx-proxy-manager:
+    image: nginx:latest
+    container_name: nginx-reverse-proxy
+    restart: unless-stopped
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+    volumes:
+      - ./nginx/reverse-proxy:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl/
+    ports:
+      - '80:80'   # HTTP
+      - '443:443' # HTTPS
+    networks:
+      - internal
+
+  webapp:
+    image: pasinduljay/sharepoint-downloader:1.0
+    container_name: sharepoint-downloader
+    restart: unless-stopped
+    volumes:
+      - ./downloads:/downloads
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+      # Add any additional required environment variables here
+    networks:
+      - internal
+
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+    volumes:
+      - ./downloads:/srv
+      - ./filebrowser.db:/database/filebrowser.db
+    environment:
+      - PUID=1000
+      - PGID=1000
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: internal
+    driver: bridge
+
+  
