@@ -34,7 +34,7 @@ jobs:
         script: |
           # Stop existing containers
           cd /webapp/Sharepoint-Video-Downloader || true
-          sudo docker-compose down -v || true
+          sudo docker-compose down || true
           
           # Clean up existing directory with proper permissions
           cd /webapp

@@ -3,10 +3,8 @@ services:
     image: nginx:latest
     container_name: nginx-reverse-proxy
     restart: unless-stopped
-    environment:
-      DB_SQLITE_FILE: "/data/database.sqlite"
     volumes:
-      - ./nginx/reverse-proxy:/etc/nginx/conf.d
+      - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/nginx/ssl/
     ports:
       - '80:80'   # HTTP
