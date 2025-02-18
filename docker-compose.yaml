@@ -4,7 +4,7 @@ services:
     container_name: nginx-reverse-proxy
     restart: unless-stopped
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/reverse-proxy:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/nginx/ssl/
     ports:
       - '80:80'   # HTTP
