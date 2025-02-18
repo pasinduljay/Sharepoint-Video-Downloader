@@ -1,5 +1,5 @@
 services:
-  nginx-proxy-manager:
+  nginx-reverse-proxy:
     image: nginx:latest
     container_name: nginx-reverse-proxy
     restart: unless-stopped
