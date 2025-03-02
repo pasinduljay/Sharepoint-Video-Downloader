@@ -33,19 +33,19 @@ jobs:
         key: ${{ env.SSH_PRIVATE_KEY }}
         script: |
           # Stop existing containers
-          cd /webapp/Sharepoint-Video-Downloader || true
+          cd /home/ubuntu/Sharepoint-Video-Downloader || true
           sudo docker-compose down -v || true
           
           # Clean up existing directory with proper permissions
-          cd /webapp
+          cd /home/ubuntu
           sudo rm -rf Sharepoint-Video-Downloader
           git clone https://${{ env.GITHUB_USERNAME }}:${{ env.GITHUB_TOKEN }}@github.com/pasinduljay/Sharepoint-Video-Downloader.git
           cd Sharepoint-Video-Downloader
           
           # Create SSL certificate and key files from GitHub Secrets
-          sudo mkdir -p ./nginx/ssl
-          echo "${{ env.SSL_CERT }}" | sudo tee ./nginx/ssl/cloudflare.crt > /dev/null
-          echo "${{ env.SSL_KEY }}" | sudo tee ./nginx/ssl/cloudflare.key > /dev/null
+          mkdir -p ./nginx/ssl
+          echo "${{ env.SSL_CERT }}" > ./nginx/ssl/cloudflare.crt
+          echo "${{ env.SSL_KEY }}" > ./nginx/ssl/cloudflare.key
 
           # Install/update Docker if needed
           bash <(curl -Ls https://gist.githubusercontent.com/pasinduljay/02cf2effb83c771c6f302b2ba59faf74/raw/8f1a8903b11da98510bb53f452fd8a0b35f04c53/Verification%2520for%2520Docker%2520and%2520Docker-compose)
