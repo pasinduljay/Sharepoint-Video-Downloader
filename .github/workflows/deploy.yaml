@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      INSTANCE_IP: ${{ vars.INSTANCE_IP }}
-      USERNAME: ${{ vars.USERNAME }}
+      INSTANCE_IP: ${{ secrets.INSTANCE_IP }}
+      USERNAME: ${{ secrets.INSTANCE_USERNAME }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       GITHUB_USERNAME: ${{ secrets.GHUB_USERNAME }}
       GITHUB_TOKEN: ${{ secrets.TOKEN }}
