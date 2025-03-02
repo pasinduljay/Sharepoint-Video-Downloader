@@ -1,4 +1,4 @@
-name: Sharepoint Downloader
+name: Deploy Private SeedBox
 
 on:
   workflow_dispatch:
@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      INSTANCE_IP: ${{ secrets.INSTANCE_IP }}
-      INSTANCE_USERNAME: ${{ secrets.INSTANCE_USERNAME }}
+      INSTANCE_IP: ${{ vars.INSTANCE_IP }}
+      USERNAME: ${{ vars.USERNAME }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       GITHUB_USERNAME: ${{ secrets.GHUB_USERNAME }}
       GITHUB_TOKEN: ${{ secrets.TOKEN }}
-      SSL_CERT: ${{ secrets.SSL_CERT }}
-      SSL_KEY: ${{ secrets.SSL_KEY }}
+      SSL_CERT: ${{ secrets.SSL_CERT }}  # GitHub secret for SSL certificate
+      SSL_KEY: ${{ secrets.SSL_KEY }}  # GitHub secret for SSL private key
 
     steps:
     - name: Install SSH Key
@@ -25,19 +25,14 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Deploy webapp
+    - name: deploy webapp
       uses: appleboy/ssh-action@master
       with:
         host: ${{ env.INSTANCE_IP }}
-        username: ${{ env.INSTANCE_USERNAME }}
+        username: ${{ env.USERNAME }}
         key: ${{ env.SSH_PRIVATE_KEY }}
         script: |
-          # Stop existing containers
-          cd /home/ubuntu/Sharepoint-Video-Downloader || true
-          sudo docker-compose down -v || true
-          
-          # Clean up existing directory with proper permissions
-          cd /home/ubuntu
+          cd /home/ubuntu 
           sudo rm -rf Sharepoint-Video-Downloader
           git clone https://${{ env.GITHUB_USERNAME }}:${{ env.GITHUB_TOKEN }}@github.com/pasinduljay/Sharepoint-Video-Downloader.git
           cd Sharepoint-Video-Downloader
@@ -46,10 +41,9 @@ jobs:
           mkdir -p ./nginx/ssl
           echo "${{ env.SSL_CERT }}" > ./nginx/ssl/cloudflare.crt
           echo "${{ env.SSL_KEY }}" > ./nginx/ssl/cloudflare.key
-
-          # Install/update Docker if needed
-          bash <(curl -Ls https://gist.githubusercontent.com/pasinduljay/02cf2effb83c771c6f302b2ba59faf74/raw/8f1a8903b11da98510bb53f452fd8a0b35f04c53/Verification%2520for%2520Docker%2520and%2520Docker-compose)
           
-          # Deploy containers
-          sudo docker-compose pull
+          # Build and deploy the Docker containers
+          bash <(curl -Ls https://gist.githubusercontent.com/pasinduljay/02cf2effb83c771c6f302b2ba59faf74/raw/8f1a8903b11da98510bb53f452fd8a0b35f04c53/Verification%2520for%2520Docker%2520and%2520Docker-compose)
+          sudo docker-compose down
+          sudo docker-compose build
           sudo docker-compose up -d
